@@ -24,7 +24,7 @@ class Node {
 }
 
 class Tree {
-  constructor(array = []) {
+  constructor(array) {
     this.root = this.buildTree(array);
   }
 
@@ -32,6 +32,8 @@ class Tree {
     array = this.sort(array);
     array = this.deleteDuplicates(array);
     console.log(array);
+    let tree = this.buildTreeRec(array, 0, array.length - 1);
+    return tree;
   }
   sort(array) {
     return mergeSort(array);
@@ -49,6 +51,33 @@ class Tree {
     }
     return result;
   }
+  buildTreeRec(array, start, end) {
+    if (start > end) return null;
+
+    let indexMid = start + Math.floor((end - start) / 2);
+
+    let root = new Node(array[indexMid]);
+    root.left = this.buildTreeRec(array, start, indexMid - 1);
+    root.right = this.buildTreeRec(array, indexMid + 1, end);
+
+    return root;
+  }
 }
 
+const prettyPrint = (node, prefix = '', isLeft = true) => {
+  if (node === null) {
+    return;
+  }
+  if (node.right !== null) {
+    prettyPrint(node.right, `${prefix}${isLeft ? '│   ' : '    '}`, false);
+  }
+  console.log(`${prefix}${isLeft ? '└── ' : '┌── '}${node.data}`);
+  if (node.left !== null) {
+    prettyPrint(node.left, `${prefix}${isLeft ? '    ' : '│   '}`, true);
+  }
+};
+
 let tree = new Tree([1, 2, 4, 2, 8, 7, 5, 8, 3, 2]);
+console.log(tree);
+
+prettyPrint(tree.root);
