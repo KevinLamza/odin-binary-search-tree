@@ -140,6 +140,27 @@ class Tree {
       }
     }
   }
+  find(value) {
+    let currentNode = this.root;
+    let stop = false;
+    while (!stop) {
+      if (value === currentNode.data) {
+        return currentNode;
+      } else if (value < currentNode.data) {
+        if (currentNode.left === null) {
+          return false;
+        } else {
+          currentNode = currentNode.left;
+        }
+      } else if (value > currentNode.data) {
+        if (currentNode.right === null) {
+          return false;
+        } else {
+          currentNode = currentNode.right;
+        }
+      }
+    }
+  }
 }
 
 const prettyPrint = (node, prefix = '', isLeft = true) => {
@@ -163,3 +184,5 @@ tree.insert(6);
 tree.deleteItem(4);
 
 prettyPrint(tree.root);
+
+console.log(tree.find(5));
