@@ -161,6 +161,55 @@ class Tree {
       }
     }
   }
+  levelOrder(callback) {
+    if (callback === undefined) {
+      throw new Error('No callback function defined');
+      return;
+    }
+    let queueIndex = 0;
+    let queue = [this.root];
+
+    while (queueIndex < queue.length) {
+      if (queue[queueIndex].left) queue.push(queue[queueIndex].left);
+      if (queue[queueIndex].right) queue.push(queue[queueIndex].right);
+      queue[queueIndex] = callback(queue[queueIndex]);
+      queueIndex = queueIndex + 1;
+    }
+  }
+  callback(node) {
+    node.data = node.data * 2;
+    return node;
+  }
+  preOrder(callback, node = this.root) {
+    if (callback === undefined) {
+      throw new Error('No callback function defined');
+      return;
+    }
+    if (node === null) return;
+    node = callback(node);
+    this.preOrder(tree.callback, node.left);
+    this.preOrder(tree.callback, node.right);
+  }
+  inOrder(callback, node = this.root) {
+    if (callback === undefined) {
+      throw new Error('No callback function defined');
+      return;
+    }
+    if (node === null) return;
+    this.inOrder(tree.callback, node.left);
+    node = callback(node);
+    this.inOrder(tree.callback, node.right);
+  }
+  postOrder(callback, node = this.root) {
+    if (callback === undefined) {
+      throw new Error('No callback function defined');
+      return;
+    }
+    if (node === null) return;
+    this.postOrder(tree.callback, node.left);
+    this.postOrder(tree.callback, node.right);
+    node = callback(node);
+  }
 }
 
 const prettyPrint = (node, prefix = '', isLeft = true) => {
@@ -183,6 +232,9 @@ tree.insert(6);
 
 tree.deleteItem(4);
 
-prettyPrint(tree.root);
+// tree.levelOrder(tree.callback);
+// tree.levelOrder();
+// tree.preOrder(tree.callback);
+tree.postOrder(tree.callback);
 
-console.log(tree.find(5));
+prettyPrint(tree.root);
