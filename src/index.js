@@ -85,6 +85,61 @@ class Tree {
       }
     }
   }
+  deleteItem(value) {
+    let currentNode = this.root;
+    let parentNode = null;
+    let previousDirection = null;
+    let stop = false;
+    let foundItem = false;
+    while (!stop) {
+      if (value === currentNode.data) {
+        foundItem = true;
+        break;
+      } else if (value < currentNode.data) {
+        if (currentNode.left === null) {
+          return;
+        } else {
+          parentNode = currentNode;
+          previousDirection = 'left';
+          currentNode = currentNode.left;
+        }
+      } else if (value > currentNode.data) {
+        if (currentNode.right === null) {
+          return;
+        } else {
+          parentNode = currentNode;
+          previousDirection = 'right';
+          currentNode = currentNode.right;
+        }
+      }
+    }
+    if (foundItem === true) {
+      // if node has no children
+      if (currentNode.left === null && currentNode.right === null) {
+        parentNode[previousDirection] = null;
+        // if node has children
+      } else {
+        // if node has only a left child
+        if (currentNode.left != null && currentNode.right === null) {
+          parentNode[previousDirection] = currentNode.left;
+          // if node has only a right child
+        } else if (currentNode.left === null && currentNode.right != null) {
+          parentNode[previousDirection] = currentNode.right;
+          // if node has both left and right child
+        } else if (currentNode.left != null && currentNode.right != null) {
+          let startNode = currentNode;
+          startNode = startNode.right;
+          while (1) {
+            if (startNode.left != null) startNode = startNode.left;
+            else break;
+          }
+          let newData = startNode.data;
+          this.deleteItem(startNode.data);
+          currentNode.data = newData;
+        }
+      }
+    }
+  }
 }
 
 const prettyPrint = (node, prefix = '', isLeft = true) => {
@@ -104,5 +159,7 @@ let tree = new Tree([1, 2, 4, 2, 8, 7, 5, 8, 3, 2]);
 tree.insert(10);
 tree.insert(1);
 tree.insert(6);
+
+tree.deleteItem(4);
 
 prettyPrint(tree.root);
