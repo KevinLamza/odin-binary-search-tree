@@ -26,6 +26,8 @@ class Node {
 class Tree {
   constructor(array) {
     this.root = this.buildTree(array);
+    this.nodeBalances = true;
+    this.nodes = [];
   }
 
   buildTree(array) {
@@ -172,33 +174,34 @@ class Tree {
     while (queueIndex < queue.length) {
       if (queue[queueIndex].left) queue.push(queue[queueIndex].left);
       if (queue[queueIndex].right) queue.push(queue[queueIndex].right);
-      queue[queueIndex] = callback(queue[queueIndex]);
+      callback(queue[queueIndex]);
       queueIndex = queueIndex + 1;
     }
   }
-  callback(node) {
-    node.data = node.data * 2;
-    return node;
-  }
+  // callback(node) {
+  //   node.data = node.data * 2;
+  //   return node;
+  // }
   preOrder(callback, node = this.root) {
     if (callback === undefined) {
       throw new Error('No callback function defined');
       return;
     }
     if (node === null) return;
-    node = callback(node);
-    this.preOrder(tree.callback, node.left);
-    this.preOrder(tree.callback, node.right);
+    callback(node);
+    this.preOrder(callback, node.left);
+    this.preOrder(callback, node.right);
   }
-  inOrder(callback, node = this.root) {
+  inOrder(callback, node = this.root, result = []) {
     if (callback === undefined) {
       throw new Error('No callback function defined');
       return;
     }
     if (node === null) return;
-    this.inOrder(tree.callback, node.left);
-    node = callback(node);
-    this.inOrder(tree.callback, node.right);
+    this.inOrder(callback, node.left);
+    callback(node);
+    this.inOrder(callback, node.right);
+    return result;
   }
   postOrder(callback, node = this.root) {
     if (callback === undefined) {
@@ -206,12 +209,14 @@ class Tree {
       return;
     }
     if (node === null) return;
-    this.postOrder(tree.callback, node.left);
-    this.postOrder(tree.callback, node.right);
-    node = callback(node);
+    this.postOrder(callback, node.left);
+    this.postOrder(callback, node.right);
+    callback(node);
   }
   height(node) {
     let height = 1;
+
+    if (node === null) return undefined;
 
     height = this.heightRec(node, height);
     return height;
@@ -255,6 +260,33 @@ class Tree {
       }
     }
   }
+  isBalanced() {
+    this.inOrder(this.checkBalance.bind(tree));
+    // console.log(this.nodeBalances);
+    return this.nodeBalances;
+  }
+  checkBalance(node) {
+    if (node.left === null && node.right === null) return;
+    else if (node.left != null && node.right === null) return;
+    else if (node.left === null && node.right != null) return;
+    else {
+      if (
+        this.height(node.left) - this.height(node.right) === 0 ||
+        this.height(node.left) - this.height(node.right) === -1 ||
+        this.height(node.left) - this.height(node.right) === 1
+      ) {
+        return;
+      } else {
+        this.nodeBalances = false;
+      }
+    }
+  }
+  rebalance() {
+    this.inOrder((x) => this.nodes.push(x.data));
+    this.root = this.buildTree(this.nodes);
+    this.nodes = [];
+    this.nodeBalances = true;
+  }
 }
 
 const prettyPrint = (node, prefix = '', isLeft = true) => {
@@ -270,19 +302,47 @@ const prettyPrint = (node, prefix = '', isLeft = true) => {
   }
 };
 
-let tree = new Tree([1, 2, 4, 2, 8, 7, 5, 8, 3, 2]);
-tree.insert(10);
-tree.insert(1);
-tree.insert(6);
+// let tree = new Tree([1, 2, 4, 2, 8, 7, 5, 8, 3, 2]);
 
-tree.deleteItem(4);
+// tree.insert(10);
+// // tree.insert(12);
+// // tree.insert(15);
+// tree.insert(1);
+// // tree.insert(2);
+// tree.insert(6);
+// // tree.deleteItem(2);
+// tree.deleteItem(4);
 
-// tree.levelOrder(tree.callback);
-// tree.levelOrder();
-// tree.preOrder(tree.callback);
-tree.postOrder(tree.callback);
+// tree.inOrder((x) => (x.data = 2 * x.data));
 
+// tree.isBalanced();
+// tree.rebalance();
+
+// prettyPrint(tree.root);
+
+let arr = [];
+for (let i = 0, t = 100; i < 20; i++) {
+  arr.push(Math.round(Math.random() * t));
+}
+console.log(arr);
+let tree = new Tree(arr);
+console.log('Tree created!');
 prettyPrint(tree.root);
+console.log('Tree is balanced? ' + tree.isBalanced());
+console.log('levelOrder:');
+tree.levelOrder((x) => console.log(x));
+console.log('preOrder:');
+tree.preOrder((x) => console.log(x));
+console.log('inOrder:');
+tree.inOrder((x) => console.log(x));
+console.log('postOrder:');
+tree.postOrder((x) => console.log(x));
 
-console.log(tree.height(tree.find(10)));
-console.log(tree.depth(tree.find(20)));
+for (let i = 0, t = 100; i < 20; i++) {
+  tree.insert(Math.round(Math.random() * t));
+}
+prettyPrint(tree.root);
+console.log('Tree is balanced? ' + tree.isBalanced());
+tree.rebalance();
+console.log('Tree is balanced? ' + tree.isBalanced());
+prettyPrint(tree.root);
