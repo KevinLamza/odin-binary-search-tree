@@ -210,6 +210,27 @@ class Tree {
     this.postOrder(tree.callback, node.right);
     node = callback(node);
   }
+  height(node) {
+    let height = 1;
+
+    height = this.heightRec(node, height);
+    return height;
+  }
+  heightRec(node, height) {
+    if (node.left === null && node.right === null) {
+      height = height - 1;
+    } else {
+      if (node.left != null) {
+        height = height + 1;
+        height = this.heightRec(node.left, height);
+      }
+      if (node.right != null) {
+        height = height + 1;
+        height = this.heightRec(node.right, height);
+      }
+    }
+    return height;
+  }
 }
 
 const prettyPrint = (node, prefix = '', isLeft = true) => {
@@ -238,3 +259,5 @@ tree.deleteItem(4);
 tree.postOrder(tree.callback);
 
 prettyPrint(tree.root);
+
+console.log(tree.height(tree.find(10)));
