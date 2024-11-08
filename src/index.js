@@ -231,6 +231,30 @@ class Tree {
     }
     return height;
   }
+  depth(node) {
+    let startNode = this.root;
+    let stop = false;
+    let depth = 0;
+    while (!stop) {
+      if (node.data === startNode.data) {
+        return depth;
+      } else if (node.data < startNode.data) {
+        if (startNode.left === null) {
+          return false;
+        } else {
+          startNode = startNode.left;
+          depth = depth + 1;
+        }
+      } else if (node.data > startNode.data) {
+        if (startNode.right === null) {
+          return false;
+        } else {
+          startNode = startNode.right;
+          depth = depth + 1;
+        }
+      }
+    }
+  }
 }
 
 const prettyPrint = (node, prefix = '', isLeft = true) => {
@@ -261,3 +285,4 @@ tree.postOrder(tree.callback);
 prettyPrint(tree.root);
 
 console.log(tree.height(tree.find(10)));
+console.log(tree.depth(tree.find(20)));
